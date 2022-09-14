@@ -1,0 +1,50 @@
+name: build
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    name: Build on ${{ matrix.os }} with ${{ matrix.architecture }}
+
+    strategy:
+      matrix:
+        target:
+          - Windows
+          - Linux
+        include:
+          - target: Windows
+            os: windows-latest
+            name: Windows
+            architecture: AMD64
+
+          - target: Linux
+            os: ubuntu-latest
+            name: Linux
+            architecture: AMD64
+
+    steps:
+      - name: Checkout SwiftShader
+      uses: actions/checkout@v3
+      with:
+        repository: google/swiftshader
+        path: SwiftShader
+
+      - name: Get CMake
+      uses: lukka/get-cmake@latest
+
+      - name: Run CMake
+        uses: lukka/run-cmake@v10
+        with:
+          cmakeListsTxtPath: '${{ github.workspace }}/SwiftShader/CMakeLists.txt'
+          cmakeAppendedArgs: '--parallel'
+          buildDirectory: ${{ github.workspace }}/build
+
+      - name: Run tests
+        working-directory: ${{ github.workspace }}/build
+        run: ./vk-unittests
+
+
+      
