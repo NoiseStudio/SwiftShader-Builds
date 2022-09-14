@@ -12,18 +12,18 @@ jobs:
     strategy:
       matrix:
         target:
-          - Windows
-          - Linux
+        - Windows
+        - Linux
         include:
-          - target: Windows
-            os: windows-latest
-            name: Windows
-            architecture: AMD64
+        - target: Windows
+          os: windows-latest
+          name: Windows
+          architecture: AMD64
 
-          - target: Linux
-            os: ubuntu-latest
-            name: Linux
-            architecture: AMD64
+        - target: Linux
+          os: ubuntu-latest
+          name: Linux
+          architecture: AMD64
 
     steps:
     - name: Checkout SwiftShader
