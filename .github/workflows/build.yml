@@ -6,9 +6,6 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-    name: Build on ${{ matrix.os }} with ${{ matrix.architecture }}
-
     strategy:
       matrix:
         target:
@@ -24,6 +21,9 @@ jobs:
           os: ubuntu-latest
           name: Linux
           architecture: AMD64
+
+    name: Build on ${{ matrix.os }} with ${{ matrix.architecture }}
+    runs-on: ${{ matrix.os }}
 
     steps:
     - name: Checkout SwiftShader
