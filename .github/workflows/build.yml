@@ -8,21 +8,9 @@ jobs:
   build:
     strategy:
       matrix:
-        target:
-        - Windows
-        - Linux
-        include:
-        - target: Windows
-          os: windows-latest
-          name: Windows
-          architecture: AMD64
+        os: [windows-latest, ubuntu-latest]
 
-        - target: Linux
-          os: ubuntu-latest
-          name: Linux
-          architecture: AMD64
-
-    name: Build on ${{ matrix.os }} with ${{ matrix.architecture }}
+    name: Build on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
 
     steps:
