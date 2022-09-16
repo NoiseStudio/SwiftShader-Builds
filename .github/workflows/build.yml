@@ -27,7 +27,7 @@ jobs:
 
     env:
       build-directory: ${{ github.workspace }}/SwiftShader/build
-      output-directory: ${{ github.build-directory }}/${{ matrix.target }}
+      output-directory: ${{ github.workspace }}/SwiftShader/build/${{ matrix.target }}
       artifact-name: SwiftShader-${{ matrix.target }}-${{ matrix.architecture }}
 
     steps:
@@ -75,7 +75,7 @@ jobs:
 
       - name: Install zip
         run: apt install zip
-        
+
       - name: Archive artifacts
         run: |
           for target in Windows-AMD64 Linux-AMD64; do
