@@ -39,8 +39,11 @@ jobs:
 
       - name: Install dependencies
         if: matrix.target == 'Linux'
-        run: |
-          sudo apt install ninja-build
+        run: sudo apt install ninja-build
+
+      - name: Set script permissions
+        if: matrix.target == 'Linux'
+        run: chmod +x ${{ matrix.build-script }}
 
       - name: Build
         run: ./${{ matrix.build-script }}
