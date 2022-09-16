@@ -49,7 +49,7 @@ jobs:
         run: ./${{ matrix.build-script }}
 
       - name: Run tests
-        working-directory: ${{ github.workspace }}/SwiftShader/build
+        working-directory: ${{ github.workspace }}/SwiftShader/build/Release
         run: ./vk-unittests
 
       - name: Remove unnecessary files from artifact
