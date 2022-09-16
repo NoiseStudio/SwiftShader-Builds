@@ -27,10 +27,6 @@ jobs:
     name: Build on ${{ matrix.os }} with ${{ matrix.architecture }}
     runs-on: ${{ matrix.os }}
 
-    env:
-      build-directory: ${{ github.workspace }}/SwiftShader/build
-      output-directory: ${{ env.build-directory }}/${{ matrix.target }}
-
     steps:
       - name: Checkout SwiftShader
         uses: actions/checkout@v3
@@ -43,18 +39,18 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install ninja-build
-          
+
       - name: Build
         run: ./${{ matrix.build-script }}
 
       - name: Run tests
-        working-directory: ${{ env.build-directory }}
+        working-directory: ${{ github.workspace }}/SwiftShader/build
         run: ./vk-unittests
 
       - name: Remove unnecessary files from artifact
         run: |
           if [ "$RUNNER_OS" == "Linux" ]; then
-            rm ${{ env.output-directory }}/libvulkan.so.1
+            rm  ${{ github.workspace }}/SwiftShader/build/${{ matrix.target }}/libvulkan.so.1
           elif [ "$RUNNER_OS" == "Windows" ]; then
             del ${{ github.workspace }}\SwiftShader\build\${{ matrix.target }}\vulkan-1.dll
           fi
@@ -64,7 +60,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: SwiftShader-${{ matrix.target }}-${{ matrix.architecture }}
-          path: ${{ env.output-directory }}
+          path: ${{ github.workspace }}/SwiftShader/build/${{ matrix.target }}
 
   upload-artifacts:
     name: Upload artifacts to release
