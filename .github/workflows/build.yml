@@ -16,18 +16,21 @@ jobs:
             os: windows-latest
             name: Windows
             architecture: AMD64
-            build-script: build-linux-amd64.sh
+            build-script: build-windows-amd64.ps1
 
           - target: Linux
             os: ubuntu-latest
             name: Linux
             architecture: AMD64
-            build-script: build-windows-amd64.ps1
+            build-script: build-linux-amd64.sh
 
     name: Build on ${{ matrix.os }} with ${{ matrix.architecture }}
     runs-on: ${{ matrix.os }}
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
       - name: Checkout SwiftShader
         uses: actions/checkout@v3
         with:
@@ -37,8 +40,7 @@ jobs:
       - name: Install dependencies
         if: matrix.target == 'Linux'
         run: |
-          sudo apt-get update
-          sudo apt-get install ninja-build
+          sudo apt install ninja-build
 
       - name: Build
         run: ./${{ matrix.build-script }}
@@ -72,7 +74,7 @@ jobs:
         uses: actions/download-artifacts@v3
 
       - name: Install zip
-        run: apt install zip
+        run: sudo apt install zip
         
       - name: Archive artifacts
         run: |
