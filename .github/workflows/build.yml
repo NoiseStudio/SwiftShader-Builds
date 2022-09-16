@@ -77,7 +77,7 @@ jobs:
 
     steps:
       - name: Download artifacts
-        uses: actions/download-artifacts@v3
+        uses: actions/download-artifact@v3
 
       - name: Install zip
         run: sudo apt install zip
