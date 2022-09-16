@@ -25,10 +25,6 @@ jobs:
     name: Build on ${{ matrix.os }} with ${{ matrix.architecture }}
     runs-on: ${{ matrix.os }}
 
-    env:
-      ghbdir: ${{ github.workspace }}/SwiftShader/build
-      ghodir: ${{ github.workspace }}/SwiftShader/build/${{ matrix.target }}
-
     steps:
       - name: Checkout SwiftShader
         uses: actions/checkout@v3
@@ -37,23 +33,23 @@ jobs:
           path: SwiftShader
 
       - name: Initialize CMake
-        working-directory: ${{ github.ghbdir }}
+        working-directory: ${{ github.workspace }}/SwiftShader/build
         run: cmake -DCMAKE_BUILD_TYPE=Release ..
 
       - name: Build
-        working-directory: ${{ github.ghbdir }}
+        working-directory: ${{ github.workspace }}/SwiftShader/build
         run: cmake --build . --parallel
 
       - name: Run tests
-        working-directory: ${{ github.ghbdir }}
+        working-directory: ${{ github.workspace }}/SwiftShader/build
         run: ./vk-unittests
 
       - name: Remove unnecessary files from artifact
         run: |
           if [ "$RUNNER_OS" == "Linux" ]; then
-            rm ${{ github.ghodir }}/libvulkan.so.1
+            rm ${{ github.workspace }}/SwiftShader/build/${{ matrix.target }}/libvulkan.so.1
           elif [ "$RUNNER_OS" == "Windows" ]; then
-            del ${{ github.ghodir }}\vulkan-1.dll
+            del ${{ github.workspace }}\SwiftShader\build\${{ matrix.target }}\vulkan-1.dll
           fi
         shell: bash
 
@@ -61,7 +57,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: SwiftShader-${{ matrix.target }}-${{ matrix.architecture }}
-          path: ${{ github.ghodir }}
+          path: ${{ github.workspace }}/SwiftShader/build/${{ matrix.target }}
 
   upload-artifacts:
     name: Upload artifacts to release
