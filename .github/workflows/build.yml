@@ -16,14 +16,20 @@ jobs:
             os: windows-latest
             name: Windows
             architecture: AMD64
+            build-script: build-linux-amd64.sh
 
           - target: Linux
             os: ubuntu-latest
             name: Linux
             architecture: AMD64
+            build-script: build-windows-amd64.ps1
 
     name: Build on ${{ matrix.os }} with ${{ matrix.architecture }}
     runs-on: ${{ matrix.os }}
+
+    env:
+      build-directory: ${{ github.workspace }}/SwiftShader/build
+      output-directory: ${{ env.build-directory }}/${{ matrix.target }}
 
     steps:
       - name: Checkout SwiftShader
@@ -32,22 +38,23 @@ jobs:
           repository: google/swiftshader
           path: SwiftShader
 
-      - name: Initialize CMake
-        working-directory: ${{ github.workspace }}/SwiftShader/build
-        run: cmake -DCMAKE_BUILD_TYPE=Release ..
-
+      - name: Install dependencies
+        if: matrix.target == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install ninja-build
+          
       - name: Build
-        working-directory: ${{ github.workspace }}/SwiftShader/build
-        run: cmake --build . --parallel
+        run: ./${{ matrix.build-script }}
 
       - name: Run tests
-        working-directory: ${{ github.workspace }}/SwiftShader/build
+        working-directory: ${{ env.build-directory }}
         run: ./vk-unittests
 
       - name: Remove unnecessary files from artifact
         run: |
           if [ "$RUNNER_OS" == "Linux" ]; then
-            rm ${{ github.workspace }}/SwiftShader/build/${{ matrix.target }}/libvulkan.so.1
+            rm ${{ env.output-directory }}/libvulkan.so.1
           elif [ "$RUNNER_OS" == "Windows" ]; then
             del ${{ github.workspace }}\SwiftShader\build\${{ matrix.target }}\vulkan-1.dll
           fi
@@ -57,7 +64,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: SwiftShader-${{ matrix.target }}-${{ matrix.architecture }}
-          path: ${{ github.workspace }}/SwiftShader/build/${{ matrix.target }}
+          path: ${{ env.output-directory }}
 
   upload-artifacts:
     name: Upload artifacts to release
@@ -70,7 +77,7 @@ jobs:
 
       - name: Install zip
         run: apt install zip
-
+        
       - name: Archive artifacts
         run: |
           for target in Windows-AMD64 Linux-AMD64; do
