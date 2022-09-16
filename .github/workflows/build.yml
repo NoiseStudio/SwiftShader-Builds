@@ -55,11 +55,12 @@ jobs:
         run: ./vk-unittests
 
       - name: Remove unnecessary files from artifact
+        working-directory: ${{ github.workspace }}/SwiftShader/build/${{ matrix.target }}
         run: |
           if [ "$RUNNER_OS" == "Linux" ]; then
-            rm  ${{ github.workspace }}/SwiftShader/build/${{ matrix.target }}/libvulkan.so.1
+            rm libvulkan.so.1
           elif [ "$RUNNER_OS" == "Windows" ]; then
-            rm ${{ github.workspace }}\SwiftShader\build\${{ matrix.target }}\vulkan-1.dll
+            rm vulkan-1.dll
           fi
         shell: bash
 
