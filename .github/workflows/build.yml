@@ -17,12 +17,14 @@ jobs:
             name: Windows
             architecture: AMD64
             build-script: build-windows-amd64.ps1
+            tests-directory: /Release
 
           - target: Linux
             os: ubuntu-latest
             name: Linux
             architecture: AMD64
             build-script: build-linux-amd64.sh
+            tests-directory: ''
 
     name: Build on ${{ matrix.os }} with ${{ matrix.architecture }}
     runs-on: ${{ matrix.os }}
@@ -49,7 +51,7 @@ jobs:
         run: ./${{ matrix.build-script }}
 
       - name: Run tests
-        working-directory: ${{ github.workspace }}/SwiftShader/build/Release
+        working-directory: ${{ github.workspace }}/SwiftShader/build${{ matrix.tests-directory }}
         run: ./vk-unittests
 
       - name: Remove unnecessary files from artifact
